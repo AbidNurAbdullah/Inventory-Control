@@ -1,0 +1,11 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jan 20, 2025, 11:26:38 AM
+    Author     : User
+*/
+.left-form{
+    -fx-background-color:linear-gradient(to bottom right, #23825e, #5a2727);
+}
