@@ -16,7 +16,7 @@ public class loginInfo {
      try
      {
          Class.forName("com.mysql.jdbc.Driver");
-         Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/quizGame", "root", "");
+         Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root", "");
          return connect;
      }  
      catch (Exception e) {
