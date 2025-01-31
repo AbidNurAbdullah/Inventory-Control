@@ -1,233 +1,19 @@
-/*
+
 package inventory_control;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-
-public class FXMLDocumentController implements Initializable {
-    @FXML
-    private TextField username;
-    @FXML
-    private PasswordField password;
-    @FXML
-    private Connection connect;
-    @FXML
-    private PreparedStatement prepare;
-    @FXML
-    private ResultSet result;
-    @FXML        
-    private TextField usignin;
-    @FXML
-    private TextField psignin;
-    
-    Stage stage;
-    Scene scene;
-    @FXML
-    private Button btnproductlist;
-    @FXML
-    private Button btncustomerlist;
-    @FXML
-    private Button btnstocklist;
-    @FXML
-    public void loginAdmin(ActionEvent event) throws IOException {
-        String sql = "SELECT * FROM admin WHERE username = ? AND password = ?";
-        connect = loginInfo.connectDb();
-
-        try {
-            prepare = connect.prepareStatement(sql);
-            prepare.setString(1, username.getText());
-            prepare.setString(2, password.getText());
-
-            result = prepare.executeQuery();
-
-            Alert alert;
-            
-            if (username.getText().isEmpty() || password.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
-            } else {
-                
-                if (result.next()) {
-                    
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Login Successful");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Welcome, " + username.getText() + "!");
-                    alert.showAndWait();
-                   
-                } else {
-                    
-                    alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Login Failed");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Incorrect username or password.");
-                    alert.showAndWait();
-                }
-            }
-        } catch (SQLException e) {
-            
-            e.printStackTrace();
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Database Error");
-            alert.setHeaderText(null);
-            alert.setContentText("An error occurred while connecting to the database.");
-            alert.showAndWait();
-        } finally {
-            
-            try {
-                if (result != null) result.close();
-                if (prepare != null) prepare.close();
-                if (connect != null) connect.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-         Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
-         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-         scene = new Scene(root);
-         stage.setScene(scene);
-         stage.show();
-    }
-  @FXML
-    private void close(ActionEvent event) {
-        System.exit(0);
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        
-    }
-     @FXML
-    private void signAdmin(ActionEvent event) throws IOException {
-    String sqlCheck = "SELECT * FROM admin WHERE username = ?";
-    String sqlInsert = "INSERT INTO admin (username, password) VALUES (?, ?)";
-
-    connect = loginInfo.connectDb();
-
-    try {
-        
-        prepare = connect.prepareStatement(sqlCheck);
-        prepare.setString(1, usignin.getText());
-        result = prepare.executeQuery();
-
-        Alert alert;
-        if (usignin.getText().isEmpty() || psignin.getText().isEmpty()) {
-            alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error Message");
-            alert.setHeaderText(null);
-            alert.setContentText("Please fill all fields");
-            alert.showAndWait();
-        } else if (result.next()) {
-            
-            alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Registration Failed");
-            alert.setHeaderText(null);
-            alert.setContentText("Username already exists.");
-            alert.showAndWait();
-        } else {
-            
-            prepare = connect.prepareStatement(sqlInsert);
-            prepare.setString(1, usignin.getText());
-            prepare.setString(2, psignin.getText());
-            int rowsAffected = prepare.executeUpdate();
-
-            if (rowsAffected > 0) {
-                alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Registration Successful");
-                alert.setHeaderText(null);
-                alert.setContentText("Admin registered successfully!");
-                alert.showAndWait();
-                
-          
-            } else {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Registration Failed");
-                alert.setHeaderText(null);
-                alert.setContentText("Failed to register the user.");
-                alert.showAndWait();
-            }
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Database Error");
-        alert.setHeaderText(null);
-        alert.setContentText("An error occurred while connecting to the database.");
-        alert.showAndWait();
-    } finally {
-        try {
-            if (result != null) result.close();
-            if (prepare != null) prepare.close();
-            if (connect != null) connect.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-     Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
-         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-         scene = new Scene(root);
-         stage.setScene(scene);
-         stage.show();
-
-}
-     @FXML
-    private void productlistAction(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("product.fxml"));
-         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-         scene = new Scene(root);
-         stage.setScene(scene);
-         stage.show();
-    }
-     @FXML
-    private void customerlistAction(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Customer.fxml"));
-         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-         scene = new Scene(root);
-         stage.setScene(scene);
-         stage.show();
-    }
-
-    @FXML
-    private void stocklistAction(ActionEvent event) {
-    }
-
-
-
-
-}*/
-package inventory_control;
-
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -240,64 +26,75 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class FXMLDocumentController implements Initializable {
-  @FXML
-    private TextField username;
     @FXML
+    private TextField username;
+     @FXML
     private PasswordField password;
       @FXML
     private TextField usignin;
-        @FXML
+       @FXML
     private TextField psignin;
-
+    
+    
     private Connection connect;
+    
     private PreparedStatement prepare;
+    
     private ResultSet result;
-
+    
     private Stage stage;
     private Scene scene;
-      @FXML
+    @FXML
     private TextField Cadd;
-        @FXML
+    @FXML
     private Button Cupdate;
-          @FXML
+    @FXML
     private Button Cdelete;
-            @FXML
+    @FXML
     private Button Cback;
-            
+      @FXML       
+    private TableView<Product> tvProduct;
+       @FXML
+    private TextField TFPLprice;
+        @FXML
+    private ComboBox<String> PLcomboboxType;
+         @FXML
+    private ComboBox<String> PLComboboxName;
+          @FXML
+    private ComboBox<Integer> PLcomboboxQuantity;
+    
+    private Connection conn;
+    private PreparedStatement pst;
     @FXML
-    private TableColumn<?, ?> TPnme;
+    private TextField Cname;
     @FXML
-    private TableColumn<?, ?> Tqn;
+    private TextField Cphone;
     @FXML
-    private TableColumn<?, ?> Tprice;
+    private TextField Cemail;
     @FXML
-    private Button PBadd;
+    private TableView<customer> tvcustomer;
     @FXML
-    private TextField Pname;
+    private TableColumn<customer, String> CIname;
     @FXML
-    private TextField Pqnt;
+    private TableColumn<customer, String> CIadress;
     @FXML
-    private TextField pprice;
+    private TableColumn<customer, Integer> CIphone;
     @FXML
-    private Button PBupdate;
-    @FXML
-    private Button PBdelete;
-    @FXML
-    private Button PBback;
-    @FXML
-    private ComboBox<?> btnproducttype;
+    private TableColumn<customer, String> CIemail;
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Any necessary initialization logic
-    }
-  @FXML
+
+  
+  
+   
+    
+     @FXML
     private void loginAdmin(ActionEvent event) throws IOException {
         String sql = "SELECT * FROM admin WHERE username = ? AND password = ?";
         connect = loginInfo.connectDb();
@@ -328,7 +125,7 @@ public class FXMLDocumentController implements Initializable {
             closeResources();
         }
     }
-  @FXML
+     @FXML
     private void signAdmin(ActionEvent event) throws IOException {
         String sqlCheck = "SELECT * FROM admin WHERE username = ?";
         String sqlInsert = "INSERT INTO admin (username, password) VALUES (?, ?)";
@@ -367,19 +164,20 @@ public class FXMLDocumentController implements Initializable {
             closeResources();
         }
     }
-  @FXML
+     @FXML
     private void productlistAction(ActionEvent event) throws IOException {
         navigateTo(event, "product.fxml");
     }
-  @FXML
+     @FXML
     private void customerlistAction(ActionEvent event) throws IOException {
+        
         navigateTo(event, "Customer.fxml");
     }
-  @FXML  
+     @FXML
     private void stocklistAction(ActionEvent event) throws IOException {
         navigateTo(event, "stock.fxml");
     }
-  @FXML
+     @FXML
     private void close(ActionEvent event) {
         System.exit(0);
     }
@@ -400,7 +198,7 @@ public class FXMLDocumentController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
+    
     private void closeResources() {
         try {
             if (result != null) result.close();
@@ -410,7 +208,7 @@ public class FXMLDocumentController implements Initializable {
             e.printStackTrace();
         }
     }
-
+    @FXML
     private void handleAction(ActionEvent event) {
         Object source = event.getSource();
 
@@ -428,4 +226,245 @@ public class FXMLDocumentController implements Initializable {
         System.out.println("Back button clicked");
     }
     }
+@FXML
+    void ProductAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    private void BackAction(ActionEvent event) throws IOException {
+        navigateTo(event, "dashboard.fxml");
+    }
+    
+    
+    public void connect() {
+    try {
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root", "");
+    } catch (Exception e) {
+        e.printStackTrace();
+        showAlert("Database Error", "Connection failed.");
+    }
 }
+
+public void loadTable() {
+    if (conn == null) {
+        System.out.println("Connection is null.");
+        return;
+    }
+
+    ObservableList<Product> productlist = FXCollections.observableArrayList();
+    Statement stmt = null;
+    ResultSet rs = null;
+    try {
+        stmt = conn.createStatement();
+        rs = stmt.executeQuery("SELECT * FROM productlist");
+        while (rs.next()) {
+            System.out.println("ID: " + rs.getInt("id") + ", Type: " + rs.getString("productType"));
+            productlist.add(new Product(rs.getInt("id"), rs.getString("productType"), rs.getString("productName"),
+                    rs.getInt("quantity"), rs.getDouble("price")));
+        }
+        tvProduct.setItems(productlist);
+    } catch (SQLException e) {
+        e.printStackTrace();
+        showAlert("Database Error", "Error loading data from the database.");
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Add Product
+public void addProduct(ActionEvent event) {
+    String type = PLcomboboxType.getValue();
+    String name = PLComboboxName.getValue();
+    Integer quantity = PLcomboboxQuantity.getValue();
+    String priceText = TFPLprice.getText();
+
+    if (type == null || name == null || quantity == null || priceText.isEmpty()) {
+        showAlert("Input Error", "All fields must be filled out.");
+        return;
+    }
+
+    double price;
+    try {
+        price = Double.parseDouble(priceText);
+    } catch (NumberFormatException e) {
+        showAlert("Input Error", "Invalid price input.");
+        return;
+    }
+
+    PreparedStatement pst = null;
+    try {
+        String query = "INSERT INTO productlist (productType, productName, quantity, price) VALUES (?, ?, ?, ?)";
+        pst = conn.prepareStatement(query);
+        pst.setString(1, type);
+        pst.setString(2, name);
+        pst.setInt(3, quantity);
+        pst.setDouble(4, price);
+        pst.executeUpdate();
+        loadTable();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        showAlert("Database Error", "Error adding product.");
+    } finally {
+        try {
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Update Product
+public void updateProduct(ActionEvent event) {
+    Product selected = tvProduct.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+        showAlert("No product selected", "Please select a product to update.");
+        return;
+    }
+
+    String type = PLcomboboxType.getValue();
+    String name = PLComboboxName.getValue();
+    Integer quantity = PLcomboboxQuantity.getValue();
+    String priceText = TFPLprice.getText();
+
+    if (type == null || name == null || quantity == null || priceText.isEmpty()) {
+        showAlert("Input Error", "All fields must be filled out.");
+        return;
+    }
+
+    double price;
+    try {
+        price = Double.parseDouble(priceText);
+    } catch (NumberFormatException e) {
+        showAlert("Input Error", "Invalid price input.");
+        return;
+    }
+
+    PreparedStatement pst = null;
+    try {
+        String query = "UPDATE productlist SET productType=?, productName=?, quantity=?, price=? WHERE id=?";
+        pst = conn.prepareStatement(query);
+        pst.setString(1, type);
+        pst.setString(2, name);
+        pst.setInt(3, quantity);
+        pst.setDouble(4, price);
+        pst.setInt(5, selected.getId());
+        pst.executeUpdate();
+        loadTable();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        showAlert("Database Error", "Error updating product.");
+    } finally {
+        try {
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Delete Product
+public void deleteProduct(ActionEvent event) {
+    Product selected = tvProduct.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+        showAlert("No product selected", "Please select a product to delete.");
+        return;
+    }
+
+    PreparedStatement pst = null;
+    try {
+        String query = "DELETE FROM productlist WHERE id=?";
+        pst = conn.prepareStatement(query);
+        pst.setInt(1, selected.getId());
+        pst.executeUpdate();
+        loadTable();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        showAlert("Database Error", "Error deleting product.");
+    } finally {
+        try {
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Alert Box
+private void showAlert(String title, String content) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
+
+
+ 
+        /* ObservableList<Integer> quantities = FXCollections.observableArrayList(
+            1, 2, 3, 4,5);
+         PLcomboboxQuantity.setItems(quantities);
+    // Add product types to the first ComboBox
+    PLcomboboxType.getItems().addAll("Snacks", "Drinks", "SkinCare Product", "Desert", "Baby Item");
+}*/
+@FXML
+private void PTCombo(ActionEvent event) {
+    /*String selectedType = PLcomboboxType.getValue();
+    PLComboboxName.getItems().clear(); // Clear previous items
+
+    if (selectedType == null) return;
+
+    if (selectedType.equals("Snacks")) {
+        PLComboboxName.getItems().addAll("Chips", "Biscuit", "Popcorn");
+    } else if (selectedType.equals("Drinks")) {
+        PLComboboxName.getItems().addAll("Coca-cola", "Mojo", "Pepsi");
+    } else if (selectedType.equals("SkinCare Product")) {
+        PLComboboxName.getItems().addAll("FaceWash", "Moisturizers", "SunScreen");
+    } else if (selectedType.equals("Desert")) {
+        PLComboboxName.getItems().addAll("Donut", "Ice Cream", "Pastry");
+    } else if (selectedType.equals("Baby Item")) {
+        PLComboboxName.getItems().addAll("Toys", "Baby Lotion", "Diaper");
+    }*/
+}
+private final String[] listType = {"Snacks", "Drinks", "SkinCare Product", "Dessert", "Baby Item"};
+ 
+
+    @FXML
+    void PNcombo(ActionEvent event) {
+
+    }
+
+    @FXML
+    void PQcombo(ActionEvent event) {
+
+    }
+   /* @Override
+    public void initialize(URL url, ResourceBundle rb) {
+   ObservableList<String> typeList = FXCollections.observableArrayList(listType);
+        PLcomboboxType.setItems(typeList);
+        
+        // Initialize quantity ComboBox
+        ObservableList<Integer> quantities = FXCollections.observableArrayList(1, 2, 3, 4, 5);
+        PLcomboboxQuantity.setItems(quantities);
+        
+      
+    
+    }*/
+   public void initialize() {
+       ObservableList<String> typeList = FXCollections.observableArrayList(listType);
+        PLcomboboxType.setItems(typeList);
+        
+        // Initialize quantity ComboBox
+        ObservableList<Integer> quantities = FXCollections.observableArrayList(1, 2, 3, 4, 5);
+        PLcomboboxQuantity.setItems(quantities);
+   }
+
+}
+
+    
+
+
