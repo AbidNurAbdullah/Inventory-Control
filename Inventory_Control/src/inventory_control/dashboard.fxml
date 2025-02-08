@@ -17,7 +17,7 @@
          <font>
             <Font name="Tahoma Bold" size="14.0" />
          </font></Button>
-      <Button fx:id="btnstocklist" layoutX="24.0" layoutY="281.0" mnemonicParsing="false" onAction="#stocklistAction" prefHeight="78.0" prefWidth="225.0" style="-fx-background-radius: 20px; -fx-background-color: white;" text="               Stock List">
+      <Button fx:id="btnstocklist" layoutX="24.0" layoutY="281.0" mnemonicParsing="false" onAction="#stocklistAction" prefHeight="78.0" prefWidth="225.0" style="-fx-background-radius: 20px; -fx-background-color: white;" text="               Orders">
          <font>
             <Font name="Tahoma Bold" size="14.0" />
          </font></Button>

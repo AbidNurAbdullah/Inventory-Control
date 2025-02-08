@@ -5,9 +5,9 @@
         <group>
             <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/FXMLDocumentController.java</file>
             <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/Product.java</file>
-            <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/customer.java</file>
-            <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/FXMLDocument.fxml</file>
+            <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/CustomerController.java</file>
             <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/ProductController.java</file>
+            <file>file:/C:/Users/User/OneDrive/Documents/GitHub/Inventory-Control/Inventory_Control/src/inventory_control/OrderController.java</file>
         </group>
     </open-files>
 </project-private>

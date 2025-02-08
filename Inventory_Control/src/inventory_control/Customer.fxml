@@ -43,7 +43,7 @@
       <Button fx:id="Cadd" layoutX="92.0" layoutY="276.0" mnemonicParsing="false" onAction="#handleAction" prefHeight="25.0" prefWidth="71.0" style="-fx-background-color: White;" text="Add" />
       <Button fx:id="Cupdate" layoutX="197.0" layoutY="276.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="25.0" prefWidth="71.0" style="-fx-background-color: white;" text="Update" />
       <Button fx:id="Cdelete" layoutX="92.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="25.0" prefWidth="71.0" style="-fx-background-color: white;" text="Delete" />
-      <Button fx:id="Cback" layoutX="193.0" layoutY="332.0" mnemonicParsing="false" onAction="#BackAction" prefHeight="25.0" prefWidth="79.0" style="-fx-background-color: white;" text="Back" />
+      <Button fx:id="Cback" layoutX="193.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleBackAction" prefHeight="25.0" prefWidth="79.0" style="-fx-background-color: white;" text="Back" />
       <TableView fx:id="tvcustomer" layoutX="293.0" layoutY="70.0" prefHeight="322.0" prefWidth="406.0">
         <columns>
           <TableColumn fx:id="CIname" prefWidth="68.0" text="Name" />

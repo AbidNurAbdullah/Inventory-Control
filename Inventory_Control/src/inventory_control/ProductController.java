@@ -51,17 +51,16 @@ public class ProductController {
         tvPqnt.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         TvPprice.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        // Initialize the combo boxes with mock data
-        PLcomboboxType.setItems(FXCollections.observableArrayList("Electronics", "Groceries", "Clothing"));
-        PLComboboxName.setItems(FXCollections.observableArrayList("Product 1", "Product 2", "Product 3"));
+        ObservableList<String> productTypes = FXCollections.observableArrayList("Snacks", "Drinks", "Groceries", "Skin-Care", "Baby Item");
+        PLcomboboxType.setItems(productTypes);
+        PLcomboboxType.setOnAction(event -> updateProductNameComboBox());
+
         PLcomboboxQuantity.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5));
 
         loadProductsFromDatabase();
 
-        // Add a selection listener to the TableView
         tvProduct.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                // Populate the ComboBoxes and TextField with the selected item's data
                 PLcomboboxType.setValue(newSelection.getProductType());
                 PLComboboxName.setValue(newSelection.getProductName());
                 PLcomboboxQuantity.setValue(newSelection.getQuantity());
@@ -69,6 +68,41 @@ public class ProductController {
             }
         });
     }
+
+    private void updateProductNameComboBox() {
+        String selectedType = PLcomboboxType.getValue();
+        ObservableList<String> productNames = FXCollections.observableArrayList();
+
+        if (selectedType != null) {
+            switch (selectedType) {
+                case "Snacks":
+                    productNames.addAll("Popcorn", "Chocolate", "Biscuits", "Nuts");
+                    break;
+                case "Drinks":
+                    productNames.addAll("Mango Juice", "Orange Juice", "Coca Cola", "Sprite", "Water");
+                    break;
+                case "Groceries":
+                    productNames.addAll("Rice", "Sugar", "Salt", "Oil", "Wheat");
+                    break;
+                case "Skin-Care":
+                    productNames.addAll("Lotion", "Soap", "Cream", "Face Wash");
+                    break;
+                case "Baby Item":
+                    productNames.addAll("Diapers", "Baby Food", "Baby Oil", "Baby Powder");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        PLComboboxName.setItems(productNames);
+        if (!productNames.isEmpty()) {
+            PLComboboxName.setValue(productNames.get(0));
+        } else {
+            PLComboboxName.setValue(null);
+        }
+    }
+
 
     private void loadProductsFromDatabase() {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
@@ -95,15 +129,35 @@ public class ProductController {
     private void handleAddAction() {
         String productType = PLcomboboxType.getValue();
         String productName = PLComboboxName.getValue();
-        int quantity = PLcomboboxQuantity.getValue();
-        double price = Double.parseDouble(TFPLprice.getText());
+        Integer quantity = PLcomboboxQuantity.getValue(); // Get Integer value
+        String priceText = TFPLprice.getText();
 
-        if (productType != null && productName != null) {
+        if (productType != null && productName != null && quantity != null && !priceText.isEmpty()) { // Check for null and empty
+          try {
+            double price = Double.parseDouble(priceText);
             Product newProduct = new Product(productList.size() + 1, productType, productName, quantity, price);
             productList.add(newProduct);
             saveProductToDatabase(newProduct);
+
+            // Clear input fields after adding
+            PLcomboboxType.setValue(null);
+            PLComboboxName.setValue(null);
+            PLcomboboxQuantity.setValue(null);
+            TFPLprice.clear();
+
+          } catch (NumberFormatException ex) {
+            // Handle parsing errors (e.g., show an alert)
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid price. Please enter a number.");
+            alert.showAndWait();
+          }
+
+        } else {
+          Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill in all fields.");
+          alert.showAndWait();
         }
     }
+
+
 
     private void saveProductToDatabase(Product product) {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
@@ -124,13 +178,19 @@ public class ProductController {
         Product selectedProduct = tvProduct.getSelectionModel().getSelectedItem();
 
         if (selectedProduct != null) {
-            selectedProduct.setProductType(PLcomboboxType.getValue());
-            selectedProduct.setProductName(PLComboboxName.getValue());
-            selectedProduct.setQuantity(PLcomboboxQuantity.getValue());
-            selectedProduct.setPrice(Double.parseDouble(TFPLprice.getText()));
+            try {
+                selectedProduct.setProductType(PLcomboboxType.getValue());
+                selectedProduct.setProductName(PLComboboxName.getValue());
+                selectedProduct.setQuantity(PLcomboboxQuantity.getValue());
+                double price = Double.parseDouble(TFPLprice.getText()); // Parse price
+                selectedProduct.setPrice(price);
 
-            updateProductInDatabase(selectedProduct);
-            tvProduct.refresh(); // Refresh table view to reflect changes
+                updateProductInDatabase(selectedProduct);
+                tvProduct.refresh();
+            } catch (NumberFormatException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid price. Please enter a number.");
+                alert.showAndWait();
+            }
         }
     }
 
